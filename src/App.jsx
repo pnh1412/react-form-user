@@ -17,8 +17,6 @@ function App() {
   const [errors, setErrors] = useState({}); // use to validate input field
   const [users, setUsers] = useState([]);
 
-  console.log('forms', forms);
-
   function submit(e) {
     e.preventDefault();
     const { name, email, city, gender } = forms;
@@ -175,12 +173,13 @@ function App() {
             <th>Email Address</th>
             <th>City</th>
             <th>Gender</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
           {users.length === 0 ? (
             <tr>
-              <td colSpan="5" align='center'>No data</td>
+              <td colSpan="6" align='center'>No data</td>
             </tr>
           ) : (
             <>
@@ -192,6 +191,10 @@ function App() {
                     <td>{user.email}</td>
                     <td>{user.city}</td>
                     <td>{user.gender}</td>
+                    <td>
+                      <Button variant="primary">Update</Button>{' '}
+                      <Button variant="danger">Delete</Button>
+                    </td>
                   </tr>
                 )
               })}
