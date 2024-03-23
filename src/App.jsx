@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Container, Stack } from 'react-bootstrap';
-
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Table from 'react-bootstrap/Table';
+import { Modal } from 'react-bootstrap';
 
 const initialForm = {
   name: '',
@@ -98,7 +98,42 @@ function App() {
     });
   }
 
+  const [updatingUser, setUpdatingUser] = useState(null);
+  const [updatingIndex, setUpdatingIndex] = useState(null);
+
+  function updateUser(user) {
+    setUpdatingUser(user);
+    setUpdatingIndex(index);
+    setForms({
+      name: user.name,
+      email: user.email,
+      city: user.city,
+      gender: user.gender,
+    });
+  }
+
+  function handleUpdate(e) {
+    e.preventDefault();
+  
+    const { name, email, city, gender } = forms;
+  
+    if (name === '' || email === '' || gender === '' || city === '') {
+      console.error('Please fill in all required fields');
+      return;
+    }
+  
+    // Sau khi cập nhật, đặt lại trạng thái
+    setUpdatingUser(null);
+    setForms(initialForm);
+  }
+  
+  function deleteUser(id) {
+    // Lọc danh sách người dùng để loại bỏ người dùng được xóa
+    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+  }
+
   return (
+
     <Container fluid="md">
       <h2>Register Form</h2>
       
@@ -192,8 +227,12 @@ function App() {
                     <td>{user.city}</td>
                     <td>{user.gender}</td>
                     <td>
-                      <Button variant="primary">Update</Button>{' '}
-                      <Button variant="danger">Delete</Button>
+                    <Button variant="primary" onClick={() => updateUser(user)}>
+                      Update
+                    </Button>{' '}
+                    <Button variant="danger" onClick={() => deleteUser(user.id)}>
+                      Delete
+                    </Button>
                     </td>
                   </tr>
                 )
@@ -204,7 +243,60 @@ function App() {
         </tbody>
       </Table>
 
+      {updatingUser !== null && (
+        <Modal show={true} onHide={() => setUpdatingUser(null)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Update User</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form onSubmit={handleUpdate}>
 
+            <Table responsive>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Email Address</th>
+                  <th>City</th>
+                  <th>Gender</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" align='center'>No data</td>
+                  </tr>
+                ) : (
+                  <>
+                    {users.map((user, index) => {
+                      return (
+                        <tr key={user.id}>
+                          <td>{index + 1}</td>
+                          <td>{user.name}</td>
+                          <td>{user.email}</td>
+                          <td>{user.city}</td>
+                          <td>{user.gender}</td>
+                          <td>
+                          <Button variant="primary" type="submit">
+                            Update User
+                          </Button>
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </> 
+                )}
+              
+              </tbody>
+            </Table>
+
+              
+            
+            </Form>
+          </Modal.Body>
+        </Modal>
+      )}
 
     </Container>
   )
